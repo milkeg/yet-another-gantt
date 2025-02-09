@@ -10,6 +10,7 @@
  * - Provide helper functions for date arithmetic
  */
 
+// Time unit constants
 const YEAR = 'year';
 const MONTH = 'month';
 const DAY = 'day';
@@ -19,6 +20,7 @@ const SECOND = 'second';
 const MILLISECOND = 'millisecond';
 
 export default {
+    // Parse duration strings like "1y", "2m", "3d", etc.
     parse_duration(duration) {
         const regex = /([0-9]+)(y|m|d|h|min|s|ms)/gm;
         const matches = regex.exec(duration);
@@ -40,6 +42,8 @@ export default {
             }
         }
     },
+
+    // Parse date string or object into Date object
     parse(date, date_separator = '-', time_separator = /[.:]/) {
         if (date instanceof Date) {
             return date;
@@ -68,6 +72,7 @@ export default {
         }
     },
 
+    // Convert date to string format
     to_string(date, with_time = false) {
         if (!(date instanceof Date)) {
             throw new TypeError('Invalid argument type');
@@ -90,6 +95,7 @@ export default {
         return date_string + (with_time ? ' ' + time_string : '');
     },
 
+    // Format date according to specified format string
     format(date, date_format = 'YYYY-MM-DD HH:mm:ss.SSS', lang = 'en') {
         const dateTimeFormat = new Intl.DateTimeFormat(lang, {
             month: 'long',
@@ -118,6 +124,7 @@ export default {
         let str = date_format;
         const formatted_values = [];
 
+        // Replace format tokens with actual values
         Object.keys(format_map)
             .sort((a, b) => b.length - a.length) // big string first
             .forEach((key) => {
@@ -134,6 +141,7 @@ export default {
         return str;
     },
 
+    // Calculate difference between two dates in specified scale
     diff(date_a, date_b, scale = 'day') {
         let milliseconds, seconds, hours, minutes, days, months, years;
 
@@ -145,6 +153,7 @@ export default {
         minutes = seconds / 60;
         hours = minutes / 60;
         days = hours / 24;
+        
         // Calculate months across years
         let yearDiff = date_a.getFullYear() - date_b.getFullYear();
         let monthDiff = date_a.getMonth() - date_b.getMonth();
@@ -182,15 +191,18 @@ export default {
         );
     },
 
+    // Get today's date (start of day)
     today() {
         const vals = this.get_date_values(new Date()).slice(0, 3);
         return new Date(...vals);
     },
 
+    // Get current date and time
     now() {
         return new Date();
     },
 
+    // Add specified quantity of time units to date
     add(date, qty, scale) {
         qty = parseInt(qty, 10);
         const vals = [
@@ -205,6 +217,7 @@ export default {
         return new Date(...vals);
     },
 
+    // Get start of time unit for date
     start_of(date, scale) {
         const scores = {
             [YEAR]: 6,
@@ -234,10 +247,12 @@ export default {
         return new Date(...vals);
     },
 
+    // Create a clone of the date object
     clone(date) {
         return new Date(...this.get_date_values(date));
     },
 
+    // Get array of date values [year, month, day, hour, minute, second, millisecond]
     get_date_values(date) {
         return [
             date.getFullYear(),
@@ -250,6 +265,7 @@ export default {
         ];
     },
 
+    // Convert between different time scales
     convert_scales(period, to_scale) {
         const TO_DAYS = {
             millisecond: 1 / 60 / 60 / 24 / 1000,
@@ -265,6 +281,7 @@ export default {
         return in_days / TO_DAYS[to_scale];
     },
 
+    // Get number of days in a month, accounting for leap years
     get_days_in_month(date) {
         const no_of_days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
@@ -282,12 +299,13 @@ export default {
         return 28;
     },
 
+    // Get number of days in a year (365 or 366)
     get_days_in_year(date) {
         return date.getFullYear() % 4 ? 365 : 366;
     },
 };
 
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
+// Utility function to pad strings with leading characters
 function padStart(str, targetLength, padString) {
     str = str + '';
     targetLength = targetLength >> 0;

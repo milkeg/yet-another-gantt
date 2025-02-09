@@ -10,12 +10,14 @@
  * - Handle element attributes and properties
  */
 
+// Query selector helper function
 export function $(expr, con) {
     return typeof expr === 'string'
         ? (con || document).querySelector(expr)
         : expr || null;
 }
 
+// Create SVG element with specified attributes
 export function createSVG(tag, attrs) {
     const elem = document.createElementNS('http://www.w3.org/2000/svg', tag);
     for (let attr in attrs) {
@@ -33,6 +35,7 @@ export function createSVG(tag, attrs) {
     return elem;
 }
 
+// Create and apply SVG animation
 export function animateSVG(svgElement, attr, from, to) {
     const animatedSvgElement = getAnimationElement(svgElement, attr, from, to);
 
@@ -46,6 +49,7 @@ export function animateSVG(svgElement, attr, from, to) {
     }
 }
 
+// Create or update animation element for SVG
 function getAnimationElement(
     svgElement,
     attr,
@@ -54,8 +58,10 @@ function getAnimationElement(
     dur = '0.4s',
     begin = '0.1s',
 ) {
+    // Check if animation already exists
     const animEl = svgElement.querySelector('animate');
     if (animEl) {
+        // Update existing animation
         $.attr(animEl, {
             attributeName: attr,
             from,
@@ -66,6 +72,7 @@ function getAnimationElement(
         return svgElement;
     }
 
+    // Create new animation element
     const animateElement = createSVG('animate', {
         attributeName: attr,
         from,
@@ -82,6 +89,7 @@ function getAnimationElement(
     return svgElement;
 }
 
+// Get cubic bezier values for animation easing
 function cubic_bezier(name) {
     return {
         ease: '.25 .1 .25 1',
@@ -92,6 +100,7 @@ function cubic_bezier(name) {
     }[name];
 }
 
+// Add event listener with optional delegation
 $.on = (element, event, selector, callback) => {
     if (!callback) {
         callback = selector;
@@ -101,16 +110,19 @@ $.on = (element, event, selector, callback) => {
     }
 };
 
+// Remove event listener
 $.off = (element, event, handler) => {
     element.removeEventListener(event, handler);
 };
 
+// Bind event listener directly to element
 $.bind = (element, event, callback) => {
     event.split(/\s+/).forEach(function (event) {
         element.addEventListener(event, callback);
     });
 };
 
+// Delegate event listener to descendant elements matching selector
 $.delegate = (element, event, selector, callback) => {
     element.addEventListener(event, function (e) {
         const delegatedTarget = e.target.closest(selector);
@@ -121,6 +133,7 @@ $.delegate = (element, event, selector, callback) => {
     });
 };
 
+// Find closest ancestor matching selector
 $.closest = (selector, element) => {
     if (!element) return null;
 
@@ -131,11 +144,14 @@ $.closest = (selector, element) => {
     return $.closest(selector, element.parentNode);
 };
 
+// Get or set element attributes
 $.attr = (element, attr, value) => {
+    // Get attribute value
     if (!value && typeof attr === 'string') {
         return element.getAttribute(attr);
     }
 
+    // Set multiple attributes
     if (typeof attr === 'object') {
         for (let key in attr) {
             $.attr(element, key, attr[key]);
@@ -143,5 +159,6 @@ $.attr = (element, attr, value) => {
         return;
     }
 
+    // Set single attribute
     element.setAttribute(attr, value);
 };
